@@ -20,13 +20,56 @@ Execute the C Program for the desired output.
 
 # PROGRAM:
 
-## C program that receives a message from message queue and display them
 
+    writer.c
+
+    #include <stdio.h>
+    #include <sys/ipc.h>
+    #include <sys/msg.h>
+    struct mesg_buffer {
+    long mesg_type;
+    char mesg_text[100];
+    } message;
+    int main()
+    { 
+    key_t key;
+    int msgid;
+    key = ftok("writter", 65);
+    msgid = msgget(key, 0666 | IPC_CREAT);
+    message.mesg_type = 1;
+    printf("Write Data : ");
+    gets(message.mesg_text);
+    msgsnd(msgid, &message, sizeof(message), 0);
+    printf("Data send is : %s \n", message.mesg_text);
+    return 0;
+    }
+
+    reader.c
+
+    #include <stdio.h>
+    #include <sys/ipc.h>
+    #include <sys/msg.h>
+    struct mesg_buffer {
+    long mesg_type;
+    char mesg_text[100];
+    } message;
+    int main()
+   {
+    key_t key;
+    int msgid;
+    key = ftok("reader.c", 65);
+    msgid = msgget(key, 0666 | IPC_CREAT);
+    msgrcv(msgid, &message, sizeof(message), 1, 0);
+    printf("Data Received is : %s \n",message.mesg_text);
+    msgctl(msgid, IPC_RMID, NULL);
+    return 0;
+    }
 
 
 
 
 ## OUTPUT
+<img width="1113" height="318" alt="555196363-ef725144-e7cb-4a88-add2-e4ada376c228" src="https://github.com/user-attachments/assets/33c4eee2-1f1f-496d-87ab-b0c21b508499" />
 
 
 
